@@ -1,1 +1,2 @@
-hello pythun
+hello python
+이름 : 오태석
