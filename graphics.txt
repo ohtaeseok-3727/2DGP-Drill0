@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define SIZE 30
+
+void textcolor(int colorNum) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colorNum);
+}
+
+struct charactor {
+    int x = 0;
+    int y = 0;
+};
+
+charactor player;
+int board[SIZE][SIZE];
+bool block[SIZE][SIZE];
+
+void initBoard() {
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++) {
+            board[i][j] = 0;
+            block[i][j] = false;
+        }
+
+    int blockCount = (rand() % 6) + 9;
+    for (int i = 0; i < blockCount; i++) {
+        int bx = (rand() % (SIZE - 1)) + 1;
+        int by = (rand() % (SIZE - 1)) + 1;
+        block[by][bx] = true;
+    }
+    player.x = 0;
+    player.y = 0;
+    board[player.y][player.x] = 0;
+}
+
+void printBoard() {
+    system("cls");
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (player.y == i && player.x == j) {
+                textcolor(9);
+                printf("*");
+            }
+            else if (block[i][j]) {
+                textcolor(12);
+                printf("X");
+            }
+            else if (board[i][j] > 0) {
+                textcolor(10);
+                printf("%d", board[i][j]);
+            }
+            else {
+                textcolor(15);
+                printf("0");
+            }
+        }
+        printf("\n");
+    }
+    textcolor(15);
+}
+
+void resetBoard() {
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++) {
+            board[i][j] = 0;
+            block[i][j] = false;
+        }
+
+    int blockCount = (rand() % 6) + 9;
+    for (int i = 0; i < blockCount; i++) {
+        int bx = (rand() % (SIZE - 1)) + 1;
+        int by = (rand() % (SIZE - 1)) + 1;
+        block[by][bx] = true;
+    }
+    player.x = 0;
+    player.y = 0;
+    board[player.y][player.x] = 0;
+}
+
+bool canMove(int nx, int ny) {
+    return nx >= 0 && nx < SIZE && ny >= 0 && ny < SIZE && !block[ny][nx];
+}
+
+int main() {
+    srand((unsigned)time(NULL));
+    initBoard();
+    printBoard();
+
+    while (1) {
+        char input = _getch();
+        int nx = player.x, ny = player.y;
+
+        if (input == 'a') nx--;
+        if (input == 'd') nx++;
+        if (input == 'w') ny--;
+        if (input == 's') ny++;
+        if (input == 'q') break;
+        
+
+        if (canMove(nx, ny)) {
+            board[player.y][player.x]++; // 지나간 자리 숫자 증가
+            player.x = nx;
+            player.y = ny;
+        }
+
+        if (input == '\n' || input == '\r') {
+            resetBoard();
+            nx = 0;
+            ny = 0;
+        }
+
+        printBoard();
+    }
+    return 0;
+}
